@@ -1,7 +1,7 @@
 use std::io;
 fn main() {
     let mut s = String::new();
-    io::stdin().read_line(&mut s).unwrap();
+    io::stdin().read_line(&mut s).expect("Failed to read line");
     let ret = slice(&s);
     println!("{}", ret);
 }
