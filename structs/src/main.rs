@@ -8,14 +8,18 @@ fn main() {
         height : height.trim().parse().expect("Failed to parse height"),
         width : width.trim().parse().expect("Failed to parse width")
     };
-    let area = calc_area(&rect1);
+    println!("rect1 is {:#?}",rect1);
+    let area = rect1.calc_area();
     println!("Area: {}", area);
 }
 
-fn calc_area(rect1: &Rectangle) -> u32 {
-    return rect1.height * rect1.width;
+impl Rectangle {
+    fn calc_area(self: &Rectangle) -> u32 {
+        self.height * self.width
+    }
 }
 
+#[derive(Debug)]
 struct Rectangle {
     width: u32,
     height: u32
