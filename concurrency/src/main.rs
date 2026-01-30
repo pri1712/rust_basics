@@ -1,15 +1,14 @@
 use std::thread;
-use std::thread::sleep;
-use std::time::Duration;
 
 fn main() {
 
-    thread::spawn(||{
-        println!("Hello, world!");
+    let handle = thread::spawn(|| {
+        for i in 1..10 {
+            println!("hi number {} from the spawned thread!", i);
+        }
     });
-    sleep(Duration::from_millis(100));
     thread::spawn(||{
         println!("Hello world part 2");
     });
-
+    handle.join().unwrap();
 }
