@@ -1,25 +1,31 @@
 use std::env::args;
-use trpl::{block_on, Html};
+use trpl::{block_on, Either, Html};
 
-async fn page_title(url: &str) -> Option<String>{
+async fn page_title(url: &str) -> (&str,Option<String>) {
     //asynchronously reads a pages title
     let response = trpl::get(url).await;
     let title_string = response.text().await;
-    Html::parse(&title_string)
+    let title = Html::parse(&title_string)
         .select_first("title")
-        .map(|title| title.inner_html())
-
+        .map(|title| title.inner_html());
+    (url,title)
 }
 
 fn main() {
     let args: Vec<String> = args().collect();
-    trpl::block_on(
-        async {
-            let url = &args[1];
-            match page_title(url).await {
-                Some(title) => println!("{}", title),
-                None => println!("No title found"),
-            }
+    trpl::block_on(async {
+        let title_one = page_title(&args[1]);
+        let title_two = page_title(&args[2]);
+
+        let (url,maybe_title) = match trpl::select(title_one,title_two).await {
+            Either::Left(left) => left,
+            Either::Right(right) => right,
+        };
+
+        println!("{} url returned first",url);
+        match maybe_title {
+            Some(title) => println!("Its page title was: '{title}'"),
+            None => println!("It had no title."),
         }
-    );
+    })
 }
